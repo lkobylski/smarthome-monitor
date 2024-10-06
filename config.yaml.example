@@ -1,0 +1,13 @@
+broker: "mqtt://your_mqtt_broker_IP:1883"
+client_id: "go_mqtt_client"
+disconnect_timeout: 1000
+topics:
+  - "zigbee2mqtt/#"
+  - "nodered/#"
+devices:
+  - id: "xiaomi_temp_mini"
+    topic: "zigbee2mqtt/mi_small_temp_temperature_sensor"
+    data_format: "json"
+  - id: "temp_bt_livingroom"
+    topic: "nodered/temp_bt_livingroom"
+    data_format: "json"

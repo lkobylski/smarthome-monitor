@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+#  mqtt-broker:
+#    image: eclipse-mosquitto
+#    container_name: mqtt-broker
+#    ports:
+#      - "1883:1883"
+#      - "9001:9001"
+#    volumes:
+#      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-storage:/prometheus
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - "3005:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana-storage:/var/lib/grafana
+      - ./provisioning:/etc/grafana/provisioning
+    depends_on:
+      - prometheus
+
+  smarthome-monitor:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        GOARCH: ${GOARCH}
+    container_name: smarthome-monitor
+#    depends_on:
+#      - mqtt-broker
+    environment:
+      - CONFIG_FILE=config.yaml
+    volumes:
+      - ./config.yaml:/root/config.yaml
+      - ./smarthome-monitor:/app
+    command: ["./smarthome-monitor"]
+
+volumes:
+  grafana-storage:
+  prometheus-storage:
